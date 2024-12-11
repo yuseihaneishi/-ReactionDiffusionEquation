@@ -64,8 +64,8 @@ void init() {
 	int i;
 	for (i = 0; i < N+2; i++) {
 		if (i == N/2) {
-			u[i] = 0.1;  // 初期値 u を中心に設定
-			v[i] = 0.2;  // 初期値 v を中心に設定
+			u[i] = 0.1;
+			v[i] = 0.2;
 		} else {
 			u[i] = 0.0;
 			v[i] = 0.0;
@@ -88,32 +88,25 @@ int main() {
 	double u0[N+2];
 	double v0[N+2];
 
-	// Initialize the system
 	init();
 
-	// Output the initial system
 	step = 0;
 	printf("%d\n", step);
 	writeVtk(step);
 
-	// Start main loop
 	for (step=1; step<=STEPMAX; step++) {
-		// Save the current u[:] and v[:] values as u0[:] and v0[:], respectively
 		for (i=0; i<N+2; i++) {
 			u0[i] = u[i];
 			v0[i] = v[i];
 		}
 
-		// Update u[:] and v[:]
 		for (i=1; i<N+1; i++) {
 			u[i] = u0[i] + DU/(DX*DX)*(u0[i+1] + u0[i-1] - 2.0*u0[i])*DT + func_u(u0[i], v0[i])*DT;
 			v[i] = v0[i] + DV/(DX*DX)*(v0[i+1] + v0[i-1] - 2.0*v0[i])*DT + func_v(u0[i], v0[i])*DT;
 		}
 
-		// Periodic boundary conditions
 		pbc();
 
-		// Output current state
 		printf("%d\n", step);
 		if (step % INTV == 0) writeVtk(step);
 	}

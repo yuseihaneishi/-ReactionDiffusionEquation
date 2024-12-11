@@ -43,11 +43,11 @@ double func_u(double x, double y) {
 	double a = 0.1;
 	double b = 1.0;
 	double c = 0.01;
-	return 1.0/a*( x*(1.0-x) - b*y*(x-c)/(x+c) );
+	return 1.0 / a *( x * (1.0 - x) - b * y * (x-c) / (x+c));
 }
 
 double func_v(double x, double y) {
-	return x-y;
+	return x - y;
 }
 
 void init() {
@@ -55,7 +55,7 @@ void init() {
 	for (i = 0; i < N+2; i++) {
 		for (j = 0; j < N+2; j++) {
 			if (i == N/2 && j == N/2) {
-				u[i][j] = 0.1; // 中心部にピークを設定
+				u[i][j] = 0.1;
 				v[i][j] = 0.1;
 			} else {
 				u[i][j] = 0.0;
@@ -69,7 +69,6 @@ void init() {
 void pbc() {
 	int i, j;
 
-	// 左右の境界
 	for (j = 0; j < N+2; j++) {
 		u[0][j] = u[N][j];
 		u[N+1][j] = u[1][j];
@@ -77,7 +76,6 @@ void pbc() {
 		v[N+1][j] = v[1][j];
 	}
 
-	// 上下の境界
 	for (i = 0; i < N+2; i++) {
 		u[i][0] = u[i][N];
 		u[i][N+1] = u[i][1];
@@ -93,30 +91,24 @@ int main() {
 	double uu[N+2][N+2];
 	double vv[N+2][N+2];
 
-	// Initialize the system
 	init();
 
-	// Apply periodic boundary conditions
 	pbc();
 
-	// Output the initial system
 	step = 0;
 	printf("%d\n", step);
 	writeVtk(step);
 
-	// Start main loop
-	for (step=1; step<=STEPMAX; step++) {
-		// Save the current u[:][:] and v[:][:] as uu[:][:] and vv[:][:]
-		for (i=0; i<N+2; i++) {
-			for (j=0; j<N+2; j++) {
+	for (step = 1; step <= STEPMAX; step++) {
+		for (i = 0; i < N+2; i++) {
+			for (j = 0; j < N+2; j++) {
 				uu[i][j] = u[i][j];
 				vv[i][j] = v[i][j];
 			}
 		}
 
-		// Update u and v
-		for (i=1; i<N+1; i++) {
-			for (j=1; j<N+1; j++) {
+		for (i = 1; i < N+1; i++) {
+			for (j = 1; j < N+1; j++) {
 				double du_diff = DU/(DX*DX) * (uu[i+1][j] + uu[i-1][j] + uu[i][j+1] + uu[i][j-1] - 4.0*uu[i][j]);
 				double dv_diff = DV/(DX*DX) * (vv[i+1][j] + vv[i-1][j] + vv[i][j+1] + vv[i][j-1] - 4.0*vv[i][j]);
 				u[i][j] = uu[i][j] + du_diff*DT + func_u(uu[i][j], vv[i][j])*DT;
@@ -124,10 +116,8 @@ int main() {
 			}
 		}
 
-		// Periodic boundary conditions
 		pbc();
 
-		// Output current state
 		printf("%d\n", step);
 		if (step % INTV == 0) writeVtk(step);
 	}

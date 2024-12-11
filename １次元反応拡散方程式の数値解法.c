@@ -51,17 +51,17 @@ void init() {
 	int i;
 	for (i = 0; i < N + 2; i++) {
 		if (i == N / 2) {
-			u[i] = 0.1; // 中心のみ u = 0.1
+			u[i] = 0.1;
 		} else {
-			u[i] = 0.0; // 他は u = 0.0
+			u[i] = 0.0;
 		}
 	}
 	return;
 }
 
 void pbc() {
-	u[0] = u[N];       // 左端を右端に合わせる
-	u[N+1] = u[1];     // 右端を左端に合わせる
+	u[0] = u[N];
+	u[N+1] = u[1];
 	return;
 }
 
@@ -70,33 +70,24 @@ int main() {
 	int step;
 	double u0[N+2];
 
-	// Initialize the system
 	init();
 
-	// Output the inital system
 	step = 0;
 	printf("%d\n", step);
 	writeVtk(step);
 
-	// Start main loop
 	for (step=1; step<=STEPMAX; step++) {
 	
-		// Save current u as u0
-		for (i=0; i<N+2; i++) {
+		for (i=0; i<N+2; i++)
 			u0[i] = u[i];
-		}
 
-		// Update u
-		for (i=1; i<N+1; i++) {
+		for (i=1; i<N+1; i++)
 			u[i] = u0[i] + D/(DX*DX)*(u0[i+1]+u0[i-1]-2.0*u0[i])*DT + func_u(u0[i])*DT;
-		}
 
-		// Periodic boundary conditions
 		pbc();
 
-		// Output
 		printf("%d\n", step);
-		if ( step%INTV == 0 ) writeVtk(step);
+		if (step % INTV == 0 ) writeVtk(step);
 	}
 
 	return 0;
